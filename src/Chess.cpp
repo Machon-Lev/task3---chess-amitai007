@@ -1,7 +1,15 @@
 #include "Chess.h"
 #include "Board.h"
 
-// clear the screen "cls"
+// Constructor
+Chess::Chess(const string& start)
+	: m_boardString(start), m_codeResponse(-1)
+{
+	setFrames();
+	setPieces();
+}
+
+// Clear the screen (ASCII code for "cls")
 void Chess::clear() const
 {
 	COORD topLeft = { 0, 0 };
@@ -19,6 +27,7 @@ void Chess::clear() const
 	);
 	SetConsoleCursorPosition(console, topLeft);
 }
+
 // create the GUI - ASCII art
 void Chess::setFrames()
 {
@@ -87,14 +96,16 @@ void Chess::setFrames()
 			m_board[i][1] = m_board[i][19] = ('A' + t);
 	}
 }
-// put the pieces from the boardString 
+
+// Put the pieces from the boardString 
 void Chess::setPieces()
 {
 	for (size_t row = 0, t = 0; row < 8; ++row)
 		for (size_t col = 0; col < 8; ++col, ++t)
 			m_board[(3 + (row * 2))][(3 + (col * 2))] = ((m_boardString[t] == '#') ? 32 : m_boardString[t]);
 }
-// print the only the board to screen 
+
+// Print only the board to the screen
 void Chess::show() const
 {
 	for (size_t row = 0; row < _SIZE; ++row)
@@ -104,7 +115,8 @@ void Chess::show() const
 		cout << endl;
 	}
 }
-// clear screen and print the board and the relevant msg 
+
+// Clear the screen and print the board and the relevant msg
 void Chess::displayBoard() const
 {
 	clear();
@@ -112,7 +124,8 @@ void Chess::displayBoard() const
 	cout << m_msg << m_errorMsg;
 
 }
-// print the who is turn before getting input 
+
+// Print the player who is currently making a move before getting input
 void Chess::showAskInput() const
 {
 	if (m_turn)
@@ -120,12 +133,14 @@ void Chess::showAskInput() const
 	else
 		cout << "Player 2 (Black - Small letters)   >> ";
 }
-// check if the source and dest are the same 
+
+// Check if the source and destination are the same
 bool Chess::isSame() const
 {
 	return ((m_input[0] == m_input[2]) && (m_input[1] == m_input[3]));
 }
-// check if the input is lockations at board
+
+// Check if the input is locations on the board
 bool Chess::isValid() const
 {
 	return ((('A' <= m_input[0]) && (m_input[0] <= 'H')) || (('a' <= m_input[0]) && (m_input[0] <= 'h')) &&
@@ -134,26 +149,28 @@ bool Chess::isValid() const
 		(('1' <= m_input[3]) && (m_input[3] <= '8')));
 }
 
-// check if the input is exit or quit  
+// Check if the input is "exit" or "quit"  
 bool Chess::isExit() const
 {
 	return ((m_input == "exit") || (m_input == "quit") || (m_input == "EXIT") || (m_input == "QUIT"));
 }
-// execute the movement on board 
-void Chess::excute()
-{
-	int row = (m_input[0] - 'a');
-	int col = (m_input[1] - '1');
-	char pieceInSource = m_boardString[(row * 8) + col];
-	m_boardString[(row * 8) + col] = '#';
 
-	row = (m_input[2] - 'a');
-	col = (m_input[3] - '1');
-	m_boardString[(row * 8) + col] = pieceInSource;
+// Execute the movement on the board 
+void Chess::execute()
+{
+	int src_row = (m_input[0] - 'a');
+	int src_col = (m_input[1] - '1');
+	char pieceInSource = m_boardString[(src_row * 8) + src_col];
+	m_boardString[(src_row * 8) + src_col] = '#';
+
+	int dest_row = (m_input[2] - 'a');
+	int dest_col = (m_input[3] - '1');
+	m_boardString[(dest_row * 8) + dest_col] = pieceInSource;
 
 	setPieces();
 }
-// check the response code and switch turn if needed 
+
+// Check the response code and switch the turn if needed 
 void Chess::doTurn()
 {
 	m_errorMsg = "\n";
@@ -161,55 +178,47 @@ void Chess::doTurn()
 	{
 	case 11:
 	{
-		m_msg = "there is not piece at the source \n";
+		m_msg = "There is no piece at the source.\n";
 		break;
 	}
 	case 12:
 	{
-		m_msg = "the piece in the source is piece of your opponent \n";
+		m_msg = "The piece in the source belongs to your opponent.\n";
 		break;
 	}
 	case 13:
 	{
-		m_msg = "there one of your pieces at the destination \n";
+		m_msg = "There is one of your pieces at the destination.\n";
 		break;
 	}
 	case 21:
 	{
-		m_msg = "illegal movement of that piece \n";
+		m_msg = "Illegal movement of that piece.\n";
 		break;
 	}
 	case 31:
 	{
-		m_msg = "this movement will cause you checkmate \n";
+		m_msg = "This movement will cause you checkmate.\n";
 		break;
 	}
 	case 41:
 	{
-		excute();
+		execute();
 		m_turn = !m_turn;
-		m_msg = "the last movement was legal and cause check \n";
+		m_msg = "The last movement was legal and caused a check.\n";
 		break;
 	}
 	case 42:
 	{
-		excute();
+		execute();
 		m_turn = !m_turn;
-		m_msg = "the last movement was legal \n";
+		m_msg = "The last movement was legal.\n";
 		break;
 	}
 	}
 }
 
-// C'tor
-Chess::Chess(const string& start)
-	: m_boardString(start), m_codeResponse(-1)
-{
-	setFrames();
-	setPieces();
-}
-
-// get the source and destination 
+// Get the source and destination 
 string Chess::getInput()
 {
 	static bool isFirst = true;
@@ -228,9 +237,9 @@ string Chess::getInput()
 	while (!isValid() || isSame())
 	{
 		if (!isValid())
-			m_errorMsg = "Invalid input !! \n";
+			m_errorMsg = "Invalid input!\n";
 		else
-			m_errorMsg = "The source and the destination are the same !! \n";
+			m_errorMsg = "The source and the destination are the same!\n";
 		displayBoard();
 		showAskInput();
 		cin >> m_input;
