@@ -1,7 +1,8 @@
-	#include "Chess.h"
+#include "Chess.h"
+#include "Board.h"
 
 // clear the screen "cls"
-void Chess::clear() const 
+void Chess::clear() const
 {
 	COORD topLeft = { 0, 0 };
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -19,8 +20,8 @@ void Chess::clear() const
 	SetConsoleCursorPosition(console, topLeft);
 }
 // create the GUI - ASCII art
-void Chess::setFrames() 
-{ 
+void Chess::setFrames()
+{
 	// set all to ' ' (space bar ascii value 32) instead of 0  
 	{
 		for (size_t row = 0; row < _SIZE; ++row)
@@ -39,7 +40,7 @@ void Chess::setFrames()
 			m_board[i][0] = 186;
 			m_board[i][20] = 186;
 		}
-	} 
+	}
 
 	// set in side frame 
 	{
@@ -57,7 +58,7 @@ void Chess::setFrames()
 		for (size_t i = 2; i < 19; i += 2)
 			for (size_t j = 3; j < 19; j += 2)
 				m_board[i][j] = 196;
-		
+
 		for (size_t i = 3; i < 18; i += 2)
 			for (size_t j = 2; j < 19; j += 2)
 				m_board[i][j] = 179;
@@ -94,7 +95,7 @@ void Chess::setPieces()
 			m_board[(3 + (row * 2))][(3 + (col * 2))] = ((m_boardString[t] == '#') ? 32 : m_boardString[t]);
 }
 // print the only the board to screen 
-void Chess::show() const 
+void Chess::show() const
 {
 	for (size_t row = 0; row < _SIZE; ++row)
 	{
@@ -108,11 +109,11 @@ void Chess::displayBoard() const
 {
 	clear();
 	show();
-	cout << m_msg<< m_errorMsg;
-	
+	cout << m_msg << m_errorMsg;
+
 }
 // print the who is turn before getting input 
-void Chess::showAskInput() const 
+void Chess::showAskInput() const
 {
 	if (m_turn)
 		cout << "Player 1 (White - Capital letters) >> ";
@@ -120,10 +121,10 @@ void Chess::showAskInput() const
 		cout << "Player 2 (Black - Small letters)   >> ";
 }
 // check if the source and dest are the same 
-bool Chess::isSame() const 
+bool Chess::isSame() const
 {
 	return ((m_input[0] == m_input[2]) && (m_input[1] == m_input[3]));
-} 
+}
 // check if the input is lockations at board
 bool Chess::isValid() const
 {
@@ -132,9 +133,9 @@ bool Chess::isValid() const
 		(('A' <= m_input[2]) && (m_input[2] <= 'H')) || (('a' <= m_input[2]) && (m_input[2] <= 'h')) &&
 		(('1' <= m_input[3]) && (m_input[3] <= '8')));
 }
-	
+
 // check if the input is exit or quit  
-bool Chess::isExit() const 
+bool Chess::isExit() const
 {
 	return ((m_input == "exit") || (m_input == "quit") || (m_input == "EXIT") || (m_input == "QUIT"));
 }
@@ -143,19 +144,19 @@ void Chess::excute()
 {
 	int row = (m_input[0] - 'a');
 	int col = (m_input[1] - '1');
-	char pieceInSource = m_boardString[(row * 8) + col]; 
-	m_boardString[(row * 8) + col] = '#'; 
+	char pieceInSource = m_boardString[(row * 8) + col];
+	m_boardString[(row * 8) + col] = '#';
 
 	row = (m_input[2] - 'a');
 	col = (m_input[3] - '1');
-	m_boardString[(row * 8) + col] = pieceInSource; 
+	m_boardString[(row * 8) + col] = pieceInSource;
 
-	setPieces(); 
+	setPieces();
 }
 // check the response code and switch turn if needed 
 void Chess::doTurn()
 {
-	m_errorMsg = "\n"; 
+	m_errorMsg = "\n";
 	switch (m_codeResponse)
 	{
 	case 11:
@@ -202,7 +203,7 @@ void Chess::doTurn()
 
 // C'tor
 Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+	: m_boardString(start), m_codeResponse(-1)
 {
 	setFrames();
 	setPieces();
@@ -216,7 +217,7 @@ string Chess::getInput()
 	if (isFirst)
 		isFirst = false;
 	else
-		doTurn(); 
+		doTurn();
 
 	displayBoard();
 	showAskInput();

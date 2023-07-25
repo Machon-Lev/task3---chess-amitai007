@@ -4,9 +4,9 @@
 #include <string>
 
 using std::cout;
-using std::cin; 
+using std::cin;
 using std::endl;
-using std::string; 
+using std::string;
 
 const int _SIZE = 21;
 
@@ -17,7 +17,7 @@ class Chess {
 	string m_input;
 	string m_msg = "\n";
 	string m_errorMsg = "\n";
-	int m_codeResponse;
+	int m_codeResponse; 
 
 	void clear() const;
 	void setFrames();
@@ -33,7 +33,7 @@ class Chess {
 
 public:
 	Chess(const string& start = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
-	Chess(const Chess&)=delete;
+	Chess(const Chess&) = delete;
 	Chess& operator=(const Chess&) = delete;
 	string getInput();
 	void setCodeResponse(int codeResponse);
